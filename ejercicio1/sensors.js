@@ -1,4 +1,18 @@
-class Sensor {}
+class Sensor {
+    constructor(sensorData) {
+        this.id = sensorData.id;
+        this.name = sensorData.name;
+        this.type = sensorData.type;
+        this.value = sensorData.value;
+        this.unit = sensorData.unit;
+        this.updated_at = new Date(sensorData.updated_at);
+    }
+
+    set updateValue(newValue) {
+        this.value = newValue;
+        this.updated_at = new Date(); // Actualiza la fecha de actualización al momento de la actualización del valor
+    }
+}
 
 class SensorManager {
     constructor() {
@@ -33,7 +47,18 @@ class SensorManager {
         }
     }
 
-    async loadSensors(url) {}
+    async loadSensors(url) {
+        try {
+            const response = await fetch(url);
+            const sensorData = await response.json();
+            sensorData.forEach((sensorItem) => {
+                const sensor.addSensor(sensor);
+            });
+            this.render();
+        } catch (error) {
+            console.error('error al cargar los sensores:', error);
+        }
+    }
 
     render() {
         const container = document.getElementById("sensor-container");
@@ -58,10 +83,8 @@ class SensorManager {
                                ${sensor.value} ${sensor.unit}
                             </p>
                         </div>
-                        <time datetime="${sensor.updated_at}">
-                            Última actualización: ${new Date(
-                                sensor.updated_at
-                            ).toLocaleString()}
+                        <time datetime="${sensor.updated_at.toISOString()}">
+                            Última actualización: ${sensor.updated_at.toLocaleString()}
                         </time>
                     </div>
                     <footer class="card-footer">
@@ -87,4 +110,6 @@ class SensorManager {
 
 const monitor = new SensorManager();
 
-monitor.loadSensors("sensors.json");
+monitor.loadSensors("sensor.json");
+
+
