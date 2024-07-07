@@ -6,11 +6,35 @@ class Currency {
 }
 
 class CurrencyConverter {
-    constructor() {}
+    constructor(apiUrl) {
+        this.apiUrl = apiUrl;
+        this.currencies = [];
+    }
 
-    getCurrencies(apiUrl) {}
+    async getCurrencies() {
+        try {
+            const response = await fetch(`${this.apiUrl}/currencies`);
+            const data = await response.json();
+            this.currencies = Object.keys(data).map((code) => new Currency(code, data[code]));
+        } catch (error) {
+            console.error('Error fetching currencies:', error);
+        }
+    }
 
-    convertCurrency(amount, fromCurrency, toCurrency) {}
+    async convertCurrency(amount, fromCurrency, toCurrency) {
+        try {
+            if (fromCurrency.code === toCurrency.code) {
+                return parseFloat(amount);
+            }
+
+            const response = await fetch(`${this.apiUrl}/latest?amount=${amount}&from=${fromCurrency.code}&to=${toCurrency.code}`);
+            const data = await response.json();
+            return data.amount;
+        } catch (error) {
+            console.error('Error converting currency:', error);
+            return null;
+        }
+    }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -42,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             toCurrency
         );
 
-        if (convertedAmount !== null && !isNaN(convertedAmount)) {
+        if (!isNaN(convertedAmount)) {
             resultDiv.textContent = `${amount} ${
                 fromCurrency.code
             } son ${convertedAmount.toFixed(2)} ${toCurrency.code}`;
@@ -52,13 +76,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     function populateCurrencies(selectElement, currencies) {
-        if (currencies) {
-            currencies.forEach((currency) => {
-                const option = document.createElement("option");
-                option.value = currency.code;
-                option.textContent = `${currency.code} - ${currency.name}`;
-                selectElement.appendChild(option);
-            });
-        }
+        currencies.forEach((currency) => {
+            const option = document.createElement("option");
+            option.value = currency.code;
+            option.textContent = `${currency.code} - ${currency.name}`;
+            selectElement.appendChild(option);
+        });
     }
 });
