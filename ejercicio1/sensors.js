@@ -52,7 +52,8 @@ class SensorManager {
             const response = await fetch(url);
             const sensorData = await response.json();
             sensorData.forEach((sensorItem) => {
-                const sensor.addSensor(sensor);
+                const sensor = new sensor(sensorItem);
+                this.addSensor(sensor);
             });
             this.render();
         } catch (error) {
@@ -111,5 +112,3 @@ class SensorManager {
 const monitor = new SensorManager();
 
 monitor.loadSensors("sensor.json");
-
-
